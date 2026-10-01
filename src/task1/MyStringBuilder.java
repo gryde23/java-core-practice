@@ -1,6 +1,8 @@
 package task1;
 
 import java.util.Arrays;
+import java.util.EmptyStackException;
+import java.util.Stack;
 
 public class MyStringBuilder {
 
@@ -8,6 +10,8 @@ public class MyStringBuilder {
 
     private char[] value;
     private int length;
+
+    private final Stack<Snapshot> history = new Stack<>();
 
     public MyStringBuilder() {
         value = new char[DEFAULT_CAPACITY];
@@ -33,6 +37,8 @@ public class MyStringBuilder {
     }
 
     public MyStringBuilder append(String str) {
+        save();
+
         int expectedLength = length + str.length();
         increaseCapacity(expectedLength);
 
@@ -44,6 +50,8 @@ public class MyStringBuilder {
     }
 
     public MyStringBuilder append(char c) {
+        save();
+
         increaseCapacity(length + 1);
 
         value[length++] = c;
@@ -52,6 +60,7 @@ public class MyStringBuilder {
     }
 
     public MyStringBuilder append(int n) {
+        save();
         return append(String.valueOf(n));
     }
 
@@ -65,6 +74,8 @@ public class MyStringBuilder {
     public int length() { return length; }
 
     public MyStringBuilder insert(int pos, String str) {
+        save();
+
         if (pos < 0 || pos > length) {
             throw new IllegalArgumentException("pos: " + pos + " length: " + length);
         }
@@ -86,6 +97,8 @@ public class MyStringBuilder {
     }
 
     public MyStringBuilder delete(int start, int end) {
+        save();
+
         if (start >= end || start < 0 || start > length || end > length) {
             throw new IllegalArgumentException("Некорректные аргументы для удаления");
         }
@@ -99,5 +112,23 @@ public class MyStringBuilder {
     @Override
     public String toString() {
         return new String(value, 0, length);
+    }
+
+    public MyStringBuilder undo() {
+        if (history.empty()) {
+            throw new RuntimeException("Не было изменений строки");
+        }
+        Snapshot snapshot = history.pop();
+        value = snapshot.value;
+        length = snapshot.length;
+
+        return this;
+    }
+
+    private void save() {
+        history.push(new Snapshot(Arrays.copyOf(value, value.length), length));
+    }
+
+    private record Snapshot(char[] value, int length) {
     }
 }
