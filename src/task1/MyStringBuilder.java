@@ -129,6 +129,17 @@ public class MyStringBuilder {
         history.push(new Snapshot(Arrays.copyOf(value, value.length), length));
     }
 
-    private record Snapshot(char[] value, int length) {
+    private record Snapshot(char[] value, int length) {}
+
+    public static void main(String[] args) {
+        MyStringBuilder s = new MyStringBuilder();
+        s.append("Hello").append(',').append(" world").append(123);
+        System.out.println(s);
+        s.insert(6, " my");
+        System.out.println(s);
+        s.delete(6, 9);
+        System.out.println(s);
+        s.undo();
+        System.out.println(s);
     }
 }
