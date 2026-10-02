@@ -11,6 +11,7 @@ public class BankAccount {
 
     public synchronized void deposit(int amount) {
         balance += amount;
+        System.out.println("Счет " + id + " пополнен на " + amount + " текущий баланс: " + getBalance());
     }
 
     public synchronized void withdraw(int amount) {
@@ -19,9 +20,14 @@ public class BankAccount {
         }
 
         balance -= amount;
+        System.out.println("Со счета " + id + " списано " + amount + " текущий баланс: " + getBalance());
     }
 
     public synchronized int getBalance() {
         return balance;
+    }
+
+    public long getId() {
+        return id;
     }
 }
